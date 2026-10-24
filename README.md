@@ -1,145 +1,145 @@
-# IMPS — Integrated Medical Records & Prescription Portal
 
-A full-stack, AI-powered healthcare application built with **React**, **TypeScript**, **Tailwind CSS**, **Node.js**, **Express**, and **SQLite**.
+MEDIS-X --- Medical Extraction, Documentation & Intelligent Systems
+MEDIS-X is a full-stack, AI-powered healthcare application designed to
+simplify prescription processing, medical record management, medication
+tracking, and doctor verification. It uses Optical Character Recognition
+(OCR) and Google Gemini AI to extract prescription information, generate
+plain-language clinical summaries, and organize medical data in one
+centralized platform.
 
-IMPS enables patients to upload printed or digital prescriptions, extract text via OCR, generate plain-language AI clinical summaries with **Google Gemini**, track medications with interactive dose logging, and request clinical verification from doctors through a centralized approval log.
-
----
-
-## 🌟 Key Features
-
-### 1. Patient Portal
-- **Prescription Upload & Extraction**:
-  - Drag-and-drop or file upload for PDFs and images (PNG, JPEG).
-  - Client-side OCR text extraction using Tesseract.js and PDF.js.
-  - **Gemini 3.1 Flash Lite** AI summarization extracting visit metadata (Doctor, Hospital, Date, Visit Reason) and an array of prescribed medications.
-  - **"Update My Profile"** button saves original files, parsed visits, documents, and medications directly to persistent storage.
-- **My Records**:
-  - Displays all saved visits with doctor, hospital, visit date, and reason.
-  - **Single Bin Icon**: Placed on the right side below the visit date with an in-app confirmation modal popup (`ConfirmDialogModal`).
-  - **Actions**: Clickable buttons to view the AI summary modal or open the original uploaded PDF/image in a new tab.
-  - **Doctor Approval**: Includes a **"Request Doctor Approval"** button. Once requested, displays live status (*Pending Approval* → *Doctor Approved*).
-- **Patient Timeline**:
-  - Chronological timeline of all medical visits (newest first).
-  - Retains history across reloads and displays linked documents.
-- **Medications (Unified Prescription Box)**:
-  - Prescriptions containing multiple medicines are grouped into **one clean card** instead of separate bloated cards.
-  - Streamlined pills for dosage, frequency (e.g., `2x daily`, `4x daily`), food instructions (`Before food`, `After food`), and duration (`10d`).
-  - **Interactive Dose Checkbox**: Tap any row to toggle its daily intake status (`✓ Taken`), persisted locally.
-  - Single bin icon below the date to remove prescription medications with confirmation.
-
-### 2. Doctor Portal
-- **Doctor's Approval Log** (`/doctor/dashboard`):
-  - Common login log displaying all patient prescription review requests.
-  - For each request:
-    - **Patient Profile**: Name, ID, visit date, and doctor details.
-    - **Generated AI Summary**: Highlighted plain-language summary.
-    - **Prescribed Medications**: Structured table showing all extracted medicines, dosages, and instructions.
-    - **Original Document**: Direct links to open original PDF/image.
-    - **Clinical Actions**: One-click **"Approve Summary & Medications"** or **"Reject"** (with clinical notes).
-  - Approving instantly synchronizes across the database and displays **"✓ Doctor Approved"** in the patient's view.
-
-### 3. Persistent Backend Storage (`medis-backend`)
-- Built-in synchronous SQLite database (`node:sqlite`) with zero external native driver dependencies.
-- Local disk storage for original uploaded PDFs and images (`medis-backend/uploads/`).
-- Complete removal of all mock-data files; all operations perform real database CRUD.
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- **Node.js** v20+ (Node v24 recommended for native `node:sqlite`)
-- **npm** v9+
-
-### 1. Backend Setup
-```bash
-cd medis-backend
-npm install
-```
-
-Configure your environment variables in `medis-backend/.env`:
-```env
-PORT=5000
-GEMINI_API_KEY=your_google_gemini_api_key_here
-```
-
-Start the backend server:
-```bash
-node server.js
-```
-The backend will run on `http://localhost:5000`.
-
-### 2. Frontend Setup
-From the project root:
-```bash
-npm install
-npm run dev
-```
-The frontend will launch at `http://localhost:5173`.
-
----
-
-## 🔄 Development Role Switcher
-
-In development mode (`npm run dev`), a floating role switcher is pinned to the bottom-left corner of the screen:
-- **PATIENT**: Switches to patient view (`Aditi Sharma` / `PATIENT-001`).
-- **DOCTOR**: Switches to doctor view (`Dr. Rhea Menon` / `DOC-001`) to access the **Doctor's Approval Log**.
-- **ADMIN**: Access administrative views.
-
----
-
-## 📁 Project Architecture
-
-```
-imps-frontend/
-├── medis-backend/                 # Express + SQLite Backend
-│   ├── server.js                  # Express API routes, multer upload, Gemini AI
-│   ├── db.js                      # SQLite schema, tables & CRUD operations
-│   ├── medis.db                   # SQLite persistent database file
-│   └── uploads/                   # Stored PDF and image prescription files
-│
+Key Features
+1. Patient Portal
+Upload printed or digital prescriptions in PDF, PNG, and JPEG
+formats.
+Extract text from documents using Tesseract.js and PDF.js.
+Generate AI-assisted clinical summaries with Google Gemini,
+including doctor, hospital, visit date, reason, and prescribed
+medication details.
+View saved visits, original documents, and AI-generated summaries.
+Track medication dosage, frequency, food instructions, and duration.
+Mark doses as taken and track daily intake.
+View medical visits in chronological order.
+Request doctor verification and view approval status.
+2. Doctor Portal
+View prescription review requests in the doctor approval dashboard.
+Review patient details, AI-generated summaries, prescribed
+medications, and original documents.
+Approve prescription records or reject requests with clinical notes.
+Synchronize review decisions with the patient's portal.
+3. Persistent Backend
+REST API built with Node.js and Express.
+SQLite database using node:sqlite.
+Local storage for uploaded prescription documents.
+CRUD operations for visits, documents, and medications.
+Persistent records across application reloads.
+Technology Stack
+Frontend: React, TypeScript, Tailwind CSS, Vite
+Backend: Node.js, Express.js
+Database: SQLite (node:sqlite)
+AI integration: Google Gemini API
+OCR: Tesseract.js
+PDF processing: PDF.js
+File uploads: Multer
+Project Structure
+MEDIS-X/
+├── medis-backend/
+│   ├── server.js
+│   ├── db.js
+│   ├── .env.example
+│   └── uploads/              # Uploaded documents; keep private
 ├── src/
 │   ├── components/
-│   │   ├── common/                # Reusable icons, modals, status badges
-│   │   │   ├── ConfirmDialogModal.tsx # In-app delete confirmation modal
-│   │   │   ├── StatusBadge.tsx    # Doctor approval & processing badges
-│   │   │   └── icons.tsx          # Minimal SVG icon library
-│   │   ├── documents/             # DocumentCard, DocumentPreviewModal, AISummaryPanel
-│   │   ├── patient/               # VisitGroupCard, MedicationGroupCard, VisitTimelineList
-│   │   └── doctor/                # AnalyticsStatCard, PatientQueueRow
 │   ├── pages/
-│   │   ├── patient/               # PatientUploadPage, PatientRecordsPage, PatientMedicationsPage
-│   │   ├── doctor/                # DoctorDashboardPage (Doctor's Approval Log)
-│   │   └── auth/                  # LoginPage
-│   ├── services/                  # Real API services (document, visit, medication, doctor)
-│   ├── types/                     # TypeScript definitions (document, visit, medication, doctor)
-│   └── utils/                     # Formatting utilities (date, status styles, OCR)
-```
+│   ├── services/
+│   ├── types/
+│   └── utils/
+├── public/
+├── package.json
+├── README.md
+└── .gitignore
+The exact folders and files may vary slightly by project version. The
+SQLite database and uploaded medical documents may be created locally
+when the application runs.
 
----
+Getting Started
+Prerequisites
+Node.js (version 24 recommended for native node:sqlite)
+npm (version 9 or later)
+A Google Gemini API key
+1. Configure the Backend
+Open a terminal in the project root, then run:
 
-## 📡 API Endpoints
+cd medis-backend
+npm install
+Create a file named .env inside medis-backend/ and add your local
+configuration:
 
-### Prescriptions & Processing
-- `POST /api/summarize` — Generates Gemini clinical summary and extracts metadata + medications.
-- `POST /api/prescriptions/save` — Stores uploaded file on disk, creates visit, document, and medication entries.
+PORT=5000
+GEMINI_API_KEY=your_google_gemini_api_key
+Replace the placeholder with your own API key. Never commit the real
+.env file or publish API keys.
 
-### Patient & Records
-- `GET /api/patients/:patientId/visits` — Lists all patient visits (newest first).
-- `DELETE /api/visits/:visitId` — Permanently deletes a visit and all associated documents & medications.
-- `GET /api/patients/:patientId/documents` — Retrieves documents for a patient.
-- `DELETE /api/documents/:documentId` — Deletes a specific document.
-- `GET /api/patients/:patientId/medications` — Retrieves all medications for a patient.
-- `DELETE /api/medications/:medicationId` — Deletes an individual medication record.
+Start the backend:
 
-### Doctor Approvals
-- `POST /api/documents/:documentId/request-approval` — Submits a prescription record for doctor review.
-- `GET /api/doctors/approval-log` — Returns all prescription requests with patient details, AI summaries, and medications.
-- `POST /api/documents/:documentId/approve` — Marks a prescription document as approved.
-- `POST /api/documents/:documentId/reject` — Marks a prescription document as rejected with reason.
+node server.js
+The backend should be available at http://localhost:5000.
 
----
+2. Configure the Frontend
+Open a second terminal in the project root and run:
 
-## 🛡️ License
-Private and confidential proprietary application.
+npm install
+npm run dev
+Vite typically serves the frontend at http://localhost:5173.
+
+API Endpoints
+Prescriptions and Processing
+POST /api/summarize --- Generate an AI clinical summary and
+extract prescription metadata and medication details.
+POST /api/prescriptions/save --- Save the uploaded file and create
+related visit, document, and medication records.
+Patient and Records
+GET /api/patients/:patientId/visits --- Retrieve a patient's
+visits.
+DELETE /api/visits/:visitId --- Delete a visit and associated
+records, subject to backend implementation.
+GET /api/patients/:patientId/documents --- Retrieve a patient's
+documents.
+DELETE /api/documents/:documentId --- Delete a document.
+GET /api/patients/:patientId/medications --- Retrieve a patient's
+medications.
+DELETE /api/medications/:medicationId --- Delete a medication
+record.
+Doctor Approvals
+POST /api/documents/:documentId/request-approval --- Request
+doctor review.
+GET /api/doctors/approval-log --- Retrieve prescription review
+requests.
+POST /api/documents/:documentId/approve --- Approve a prescription
+document.
+POST /api/documents/:documentId/reject --- Reject a prescription
+document with a reason.
+Confirm endpoint paths and behavior against the current backend
+implementation before relying on them.
+
+Development Role Switcher
+In development mode, the application may provide a role switcher for
+exploring Patient, Doctor, and Admin views. The available roles and
+sample profiles depend on the current project configuration.
+
+Security and Privacy
+Keep API keys, passwords, and other secrets in environment
+variables.
+Do not commit .env files, real patient records, uploaded
+prescriptions, or sensitive database files to a public repository.
+Ensure .gitignore excludes local secrets, uploaded medical
+documents, and private database files.
+Use only synthetic or properly de-identified medical data for
+demonstrations.
+Doctor verification should be performed by qualified healthcare
+professionals.
+AI-generated summaries support clinical review and must not replace
+professional medical judgment.
+License
+Private and confidential proprietary application. Unauthorized use,
+reproduction, or distribution is prohibited.
+
